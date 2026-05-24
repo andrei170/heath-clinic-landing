@@ -95,6 +95,13 @@
   .cinfo li b{color:var(--champ);display:inline-block;width:96px;font-weight:500}
   .reveal{opacity:0;transform:translateY(24px);transition:.8s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
+  /* first-visit band */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:42px;counter-reset:step}
+  .step{position:relative;border:1px solid var(--line);border-radius:10px;padding:34px 28px 30px;background:var(--surf)}
+  .step:before{counter-increment:step;content:"0" counter(step);font-family:var(--serif);font-size:34px;color:var(--gold);display:block;margin-bottom:14px;opacity:.85}
+  .step h3{font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:.2px}
+  .step p{color:var(--muted);font-size:14px;margin-top:8px}
+  @media(max-width:860px){.steps{grid-template-columns:1fr}}
   footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px;padding:42px 0;text-align:center}
   footer .logo{margin-bottom:10px}
   .demo-tag{position:fixed;bottom:14px;right:14px;background:rgba(27,30,36,.92);border:1px solid var(--line);color:var(--muted);font-size:11.5px;padding:8px 13px;border-radius:6px;z-index:60;letter-spacing:.3px}
@@ -170,6 +177,17 @@
   </div>
 </div></section>
 
+<section id="first-visit"><div class="wrap">
+  <div class="eyebrow reveal" style="text-align:center">Your first visit</div>
+  <h2 class="reveal" style="text-align:center">How your first visit works.</h2>
+  <p class="lead reveal" style="margin:18px auto 0;text-align:center">No pressure, no menu pushed at you. Three calm steps, all with the doctor.</p>
+  <div class="steps">
+    <div class="step reveal"><h3>A real conversation</h3><p>You meet Dr Geyer and talk through your goals, your skin and any concerns, honestly and without rush.</p></div>
+    <div class="step reveal"><h3>OBSERV 520 skin analysis</h3><p>Imaging that sees beneath the surface, so any recommendation is based on what your skin actually needs.</p></div>
+    <div class="step reveal"><h3>An honest plan</h3><p>A regenerative, skin-first plan from the doctor who will carry it out, including when the answer is to do less.</p></div>
+  </div>
+</div></section>
+
 <section id="approach"><div class="wrap" style="text-align:center;max-width:760px">
   <div class="eyebrow reveal">The approach</div>
   <h2 class="reveal">We would rather you did less, and loved it.</h2>
@@ -236,8 +254,17 @@
 <script>
   const prog=document.getElementById('prog');
   addEventListener('scroll',()=>{const h=document.documentElement;prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';});
-  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target;
+      const sibs=Array.from(el.parentElement.children).filter(c=>c.classList.contains('reveal'));
+      const i=sibs.indexOf(el);
+      el.style.transitionDelay=(i>0?Math.min(i,5)*90:0)+'ms';
+      el.classList.add('in');
+      io.unobserve(el);
+    }
+  }),{threshold:.12});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
   document.querySelectorAll('.q button').forEach(b=>b.addEventListener('click',()=>{b.parentElement.classList.toggle('open');b.querySelector('.pl').textContent=b.parentElement.classList.contains('open')?'−':'+';}));
 </script>
 </body>
